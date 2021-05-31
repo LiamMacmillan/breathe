@@ -6,7 +6,6 @@
 <head> 
     <?php 
         include 'includes/head.php';
-        // include 'db/connect.php';
         include 'includes/functions.php';
     ?> 
 </head>
