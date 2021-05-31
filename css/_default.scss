@@ -1,0 +1,509 @@
+/* --------- */
+/* VARIABLES */
+/* --------- */
+
+/**** COLOURS ****/
+
+$primary_color: #5B85E3;
+$secondary_color: #83BD6F;
+$background_color: #EFEFEF;
+$black: #3f3f3f;
+$gray: #CCCCCC;
+$green: #8AC476;
+
+/**** FONTS ****/
+
+$primary_font: "brandon-grotesque", sans-serif;
+$secondary_font: "FatFrank", sans-serif;
+
+$font_size: 1.2vw;
+$mobile_font_size: $font_size*3;
+
+/* -------------------------- */
+/* MIXINS & RE-USABLE CLASSES */
+/* -------------------------- */
+
+// Inner 
+@mixin inner($width,$height) {
+    width: $width;
+    height: $height;
+    margin: 0 auto;
+    position: relative;
+}
+
+// Box Shadow 
+// eg. @include box-shadow(0 0 0.3vw 0 rgba(0,0,0,0.3));
+@mixin box-shadow($shadow) {
+    -webkit-box-shadow: $shadow;
+       -moz-box-shadow: $shadow;
+            box-shadow: $shadow;
+}
+
+// No Select
+@mixin noselect() {
+    -webkit-touch-callout: none;
+      -webkit-user-select: none;
+       -khtml-user-select: none;
+         -moz-user-select: none;
+          -ms-user-select: none;
+              user-select: none;    
+}
+
+// Border Box
+@mixin border-box() {
+    box-sizing:        border-box;
+    ms-box-sizing:     border-box;
+    moz-box-sizing:    border-box;
+    webkit-box-sizing: border-box;
+}
+
+// Positioning
+@mixin horizontal-center() {
+    left: 50%;
+    position: absolute !important;
+    transform: translate(-50%);    
+}
+
+@mixin vertical-center() {
+    position: absolute !important;
+    top: 50%;
+    transform: translateY(-50%);  
+}
+
+@mixin hor-ver-center() {
+    left: 50%;
+    position: absolute !important;
+    top: 50%;
+    transform: translate(-50%,-50%);
+}
+
+@mixin top-left() {
+    left: 0;
+    position: absolute !important;
+    top: 0;
+}
+
+@mixin justify-v-center() {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+// Background Overlay
+@mixin bg-overlay() {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    left: 0;
+    position: fixed;
+    top: 0;
+    z-index: 9999;
+}
+
+// Transition
+@mixin transition($time) {
+    -webkit-transition: all $time ease;
+       -moz-transition: all $time ease;
+            transition: all $time ease;
+}
+
+// Item Grid
+@mixin item-grid($rowSize) {
+    &:nth-of-type(1), &:nth-of-type(#{$rowSize}n+1) {
+        margin-left: 0;
+    }
+
+    &:nth-of-type(-n+#{$rowSize}) {
+        margin-top: 0;
+    }
+}
+
+// Blur
+@mixin blur($size,$time) {
+    filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius='3');
+    -webkit-filter: url(#blur-filter);
+    filter: url(#blur-filter);
+    -webkit-filter: blur($size);
+    filter: blur($size);
+    @include transition($time);
+}
+
+// Desktop
+@mixin desktop() {
+    @media (min-width: 450px) { 
+        @content;
+    }
+}
+
+// Mobile
+@mixin mobile() {
+    @media (max-width: 450px) { 
+        @content;
+    }
+}
+
+// Stop Scrolling
+.stop-scrolling {
+  height: 100%;
+  overflow: hidden;
+}
+
+// Hide
+.hide { display: none; }
+
+// Blur
+.blur {
+    filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius='3');
+    -webkit-filter: url(#blur-filter);
+    filter: url(#blur-filter);
+    -webkit-filter: blur(0.3vw);
+    filter: blur(0.3vw);
+    @include transition(0.5s);
+}
+
+/* ------------ */
+/* CSS: DEFAULT */
+/* ------------ */
+
+* {
+    @include border-box();
+}
+
+html, body { 
+    width: 100%;
+    height: 100%;
+    background: rgb(62,103,194);
+    background: radial-gradient(circle, rgba(62,103,194,1) 0%, rgba(91,133,227,1) 100%);
+    color: white;
+    font-family: $primary_font;
+    font-size: $font_size;
+    overflow: hidden;
+
+    @include mobile() { 
+        font-size: $mobile_font_size;
+    }
+}
+
+canvas.background {
+    width: 100%;
+    height: 100%;
+    filter: blur(0);
+    z-index: 1; 
+    @include transition(1s);
+    @include horizontal-center();
+    
+    &.background-blur {
+        filter: blur(0.3vw);
+        @include transition(1s);
+    }
+}
+
+// Links
+a {
+    color: inherit;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+// Wrap
+#wrap {
+    width: 100%;
+    
+    // Inner
+    .inner {
+        width: 65%;
+        // border: 1px dotted red;
+        margin: 0 auto;
+    }
+}
+
+// Sections
+section {
+    width: 100%;
+    float: left;
+    position: relative;
+    @include border-box();
+}
+
+/* --------- */
+/* CONTAINER */
+/* --------- */
+
+#container {
+    width: 50%;
+    height: calc(var(--vh, 1vh) * 100);
+    align-content: center;
+    display: flex;
+    flex-flow: column wrap;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+    
+    @include mobile() {
+        width: 85%;
+    }
+
+    // Hide Exercise Page elements
+    .exercise { 
+        opacity: 0;
+        z-index: -999;
+        transition: opacity 1s;
+        
+        &.exercise-show {
+            opacity: 1;
+            z-index: 2;
+        }
+    }
+    
+    .row {
+        width: 100%;
+        align-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        position: relative;
+        justify-content: center;
+    }
+    
+    #top-row {
+        height: 15%;
+        
+        // Logo
+        a#logo {
+            color: rgba(0,0,0,0.5);
+            white-space: nowrap;
+            font-family: $secondary_font;
+            font-size: 290%;
+            align-self: flex-end;
+            opacity: 0.8;
+            @include noselect();
+            
+            @include mobile() {
+                align-content: center;
+            }
+
+            span {
+                opacity: 0.7;
+            }
+        }  
+    }
+
+    #middle-row {
+        height: 70%; 
+        text-align: center;
+        
+        /* INDEX */
+        
+        // Description
+        #desc {
+            width: 100%;
+            cursor: default;
+            font-size: 110%;
+            line-height: 1.7;
+            margin-top: 12.5vh;
+            @include noselect();
+            
+            @include mobile() {
+                font-size: 120%;
+                line-height: 1.5;
+                margin-top: 3vh;
+            }
+            
+            a {
+                display: inline-block;
+                font-size: 85%;
+                margin: 0.8vw 0 2vw 0;
+                opacity: 0.5;
+                @include transition(0.2s);
+                
+                @include mobile() {
+                    font-size: 90%;
+                    margin-top: 2vh;
+                    opacity: 0.7;
+                    
+                    .icn {
+                        display: none;
+                        opacity: 0.7;
+                    }
+                }
+                
+                &:hover {
+                    @include desktop() {
+                        opacity: 1;
+
+                        .icn {
+                            margin-left: 0.3vw;
+                        }
+                    }
+                }
+                
+                .icn {
+                    font-size: 80%;
+                    margin-left: 0.25vw;
+                    opacity: 0.5;
+                    @include transition(0.2s);
+                }
+            }
+            
+            span {
+                opacity: 0.8;
+                
+                @include mobile() {
+                    opacity: 1;
+                }
+            }
+            
+            b {
+                font-weight: bolder;
+                
+                @include mobile() {
+                    display: inline-block;
+                    font-size: 105%;
+                    letter-spacing: -0.8vw;
+                    margin-top: 3vh;
+                }
+            }
+        }
+        
+        // Start Exercise
+        #start-exercise-btn {
+            align-self: flex-start;
+            background-color: rgba(0,0,0,0.1);
+            border-radius: 5vw;
+            cursor: pointer;
+            padding: 1.2vw 2.3vw 1.2vw 2.3vw;
+            transition: background-color 0.3s ease-in;
+            @include noselect();
+            
+            @include mobile() {
+                border-radius: 15vw;
+                font-size: 130%;
+                margin-top: 3vh;
+                padding: 4.5vw 7vw 5.5vw 7vw;
+            }
+            
+            &:hover {
+                background-color: $green;
+            }
+        }
+        
+        /* EXERCISE */
+        
+        // Breathing Exercise
+        #breathe { 
+            font-size: 550%;
+            opacity: 0.2;
+            white-space: nowrap;
+            margin-bottom: 2.5vw;
+            position: relative;
+            transform: scale(0.2);
+            text-shadow: 0 0 6vw rgba(0,0,0,0.1);
+            @include noselect();
+            
+            p {
+                cursor: default;
+                line-height: 1.6;
+            }
+            
+            &.start-exercise {
+                opacity: 0.9;
+                transform: scale(0.3);
+                transition: all 1s ease-in-out;
+                @include noselect();
+                
+                p {
+                    color: rgba(255,255,255,0.7);
+                    
+                    b {
+                        color: rgba(255,255,255,1);
+                    }
+                }
+                
+            }
+
+            &.inhale {
+                opacity: 0.8;
+                transform: scale(1);
+                transition: all 4s ease-in-out;
+            }
+
+            &.exhale {
+                opacity: 0.2;
+                transform: scale(0.2);
+                transition: all 8s ease-in-out;
+            }
+
+            &.completed {
+                font-family: $secondary_font;
+                opacity: 0.85;
+                transform: scale(0.75);
+                transition: transform 1.5s linear, opacity 1.5s linear, color 1.5s linear;
+
+                p {
+                    color: $green;
+                
+                    .success-icn {
+                        font-size: 130%;
+                    }
+                    
+                    // temp: go to homepage
+                    a#repeat-exercise {
+                        display: block;
+                        font-size: 30%;
+                        font-family: $primary_font;
+                        opacity: 0.8;
+                        @include transition(0.3s);
+
+                        &:hover {
+                            opacity: 1;
+                        }
+
+                        .icn {
+                            display: none;
+                            font-size: 80%;
+                            margin-left: 1vw;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    #bottom-row {
+        height: 15%;
+        
+        // Progress Bar (Exercise)
+        #progress-bar {
+            width: 100%;
+            align-self: flex-start;
+            flex-grow: 1;
+
+            .item {
+                width: 16%;
+                height: 0.3vw;
+                background-color: black;
+                border-radius: 1vw;
+                float: left;
+                margin-left: 5%;
+                opacity: 0.2;
+                @include transition(1.5s);
+
+                &:nth-of-type(1) {
+                    margin-left: 0;
+                }
+            }
+        }
+    }
+    
+    #made-by {
+        bottom: 2vw;
+        color: white;
+        cursor: pointer;
+        opacity: 0.35;
+        @include horizontal-center();
+        @include transition(0.2s);
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+}
